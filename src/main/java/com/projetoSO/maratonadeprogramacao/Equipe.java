@@ -1,20 +1,18 @@
 package com.projetoSO.maratonadeprogramacao;
+import java.util.*;
 
-import java.util.List;
-import java.util.Map;
-import java.util.ArrayList;
-import java.util.HashMap;
+public class Equipe implements Runnable{
+    private final String nome;
+    private int pontos;
+    private final List<String> baloes;
+    private final List<Problema> problemas;
+    private final Map<Problema, Integer> submissoesErradas;
 
-public class Equipe {
-    private String nome;
-    private int pontos; // Quantidade de questões resolvidas
-    private final List<String> baloes; // Lista de emojis dos balões
-    private final Map<Problema, Integer> submissoesErradas; // Map para associar um problema à quantidade de submissões erradas
-
-    public Equipe(String nome) {
+    public Equipe(String nome, List<Problema> problemas) {
         this.nome = nome;
         this.pontos = 0;
         this.baloes = new ArrayList<>();
+        this.problemas = problemas;
         this.submissoesErradas = new HashMap<>();
     }
 
@@ -34,13 +32,43 @@ public class Equipe {
         return baloes;
     }
 
-    public void setBaloes(String balao) {
-        this.baloes.add(balao);
+    public void setBaloes() {
+        this.baloes.add("\uD83C\uDF88");
     }
 
-    public Map<Problema, Integer> getSubmissoesErradas() {
-        return submissoesErradas;
+    private void realizaSubmissao() {
+        Random random = new Random();
+        if (problemas.isEmpty()) {
+            System.out.println(this.nome + " resolveu todos os problemas!");
+            return;
+        }
+
+        int index = random.nextInt(Math.max(problemas.size() - 1, 0));
+        Problema problema = problemas.get(index);
+        int submissao = random.nextInt(1, 100);
+        boolean tentativa = problema.verificarSubmissao(submissao);
+
+        if (tentativa) {
+            System.out.println(this.nome + " acertou o problema " + (index + 1) + "!");
+            setBaloes();
+            problemas.remove(index);
+            setPontos(100 - (submissoesErradas.getOrDefault(problema, 0) * 2));
+        } else {
+            System.out.println(this.nome + " errou o problema " + (index + 1) + "!");
+            submissoesErradas.put(problema, submissoesErradas.getOrDefault(problema, 0) + 1);
+        }
     }
 
-    // TODO: implementar o método resolver problema
+    @Override
+    public void run() {
+        while (!Thread.currentThread().isInterrupted()) {
+            try {
+                System.out.println(this.nome + " está programando...");
+                realizaSubmissao();
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                break;
+            }
+        }
+    }
 }
