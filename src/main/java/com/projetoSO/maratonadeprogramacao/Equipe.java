@@ -43,13 +43,17 @@ public class Equipe implements Runnable{
             return;
         }
 
-        int index = random.nextInt(0,problemas.size());
+        int index;
+        if(problemas.size() > 1)
+            index = random.nextInt(problemas.size()-1);
+        else
+            index = 0;
         Problema problema = problemas.get(index);
         int submissao = random.nextInt(1, 100);
         boolean tentativa = problema.verificarSubmissao(submissao);
 
         if (tentativa) {
-            System.out.println(this.nome + " acertou o problema " + (index) + "!");
+            System.out.println(this.nome + " acertou o problema " + (index + 1) + "!");
             setBaloes();
             problemas.remove(index);
             setPontos(100 - (submissoesErradas.getOrDefault(problema, 0) * 2));
