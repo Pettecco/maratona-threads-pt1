@@ -31,23 +31,22 @@ public class Equipe implements Runnable{
     public List<String> getBaloes() {
         return baloes;
     }
+    public String getProblemas(){
+        return problemas.toString();
+    }
 
     public void setBaloes() {
         this.baloes.add("\uD83C\uDF88");
     }
 
-    private void realizaSubmissao() {
+    private void realizaSubmissao() throws IndexOutOfBoundsException{
         Random random = new Random();
         if (problemas.isEmpty()) {
             System.out.println(this.nome + " resolveu todos os problemas!");
             return;
         }
 
-        int index;
-        if(problemas.size() > 1)
-            index = random.nextInt(problemas.size()-1);
-        else
-            index = 0;
+        int index = random.nextInt(problemas.size());
         Problema problema = problemas.get(index);
         int submissao = random.nextInt(1, 100);
         boolean tentativa = problema.verificarSubmissao(submissao);
